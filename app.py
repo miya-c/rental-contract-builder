@@ -1,5 +1,6 @@
 import os
 import logging
+import json
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
@@ -67,6 +68,19 @@ with app.app_context():
         db.session.add(admin)
         db.session.commit()
         logging.info("Created default admin user")
+
+# Custom Jinja2 filter for parsing JSON
+def fromjson(value):
+    return json.loads(value) if value else []
+
+app.jinja_env.filters['fromjson'] = fromjson
+
+# Add template filter for nl2br (newline to <br>)
+@app.template_filter('nl2br')
+def nl2br(value):
+    if not value:
+        return ''
+    return value.replace('\n', '<br>')
 
 # User loader function for Flask-Login
 @login_manager.user_loader
