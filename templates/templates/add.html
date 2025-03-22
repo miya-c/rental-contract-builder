@@ -1,3 +1,4 @@
+
 {% extends 'layout.html' %}
 
 {% block title %}賃貸借契約書作成システム - テンプレート追加{% endblock %}
@@ -7,7 +8,7 @@
     <div class="col-lg-10 mx-auto">
         <div class="card shadow">
             <div class="card-header">
-                <h3 class="mb-0"><i class="fas fa-copy"></i> 新規テンプレート追加</h3>
+                <h3 class="mb-0"><i class="fas fa-file-alt"></i> 新規テンプレート作成</h3>
             </div>
             <div class="card-body">
                 <form method="POST" action="{{ url_for('add_template') }}" enctype="multipart/form-data">
@@ -29,11 +30,6 @@
                         {% endfor %}
                     </div>
                     
-                    <div class="mb-3 form-check">
-                        {{ form.is_default(class="form-check-input", id="is_default") }}
-                        <label class="form-check-label" for="is_default">{{ form.is_default.label }}</label>
-                    </div>
-                    
                     <div class="mb-3 required">
                         <label for="file_type" class="form-label">{{ form.file_type.label }}</label>
                         {{ form.file_type(class="form-control", id="file_type") }}
@@ -45,70 +41,77 @@
                     <div class="mb-3">
                         <label for="template_file" class="form-label">{{ form.template_file.label }}</label>
                         {{ form.template_file(class="form-control", id="template_file") }}
-                        <small class="text-muted" id="file-format-help">ファイル形式に応じたテンプレートをアップロードしてください。</small>
                         {% for error in form.template_file.errors %}
                         <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     
-                    <div class="mb-3" id="html-content-container">
+                    <div id="html-content" class="mb-3">
                         <label for="file_content" class="form-label">{{ form.file_content.label }}</label>
-                        <div class="d-flex justify-content-end mb-2">
-                            <button id="preview-template" class="btn btn-info btn-sm">
-                                <i class="fas fa-eye"></i> プレビュー
-                            </button>
-                        </div>
-                        {{ form.file_content(class="form-control template-editor", id="file_content", rows="15") }}
-                        <small class="text-muted">
-                            テンプレート内で使用可能な変数:
-                            <ul class="mt-2">
-                                <li><code>{{ "{{ contract.tenant_name }}" }}</code> - 借主名</li>
-                                <li><code>{{ "{{ contract.tenant_address }}" }}</code> - 借主住所</li>
-                                <li><code>{{ "{{ contract.start_date }}" }}</code> - 契約開始日</li>
-                                <li><code>{{ "{{ contract.rent_amount }}" }}</code> - 月額賃料</li>
-                                <li><code>{{ "{{ room.room_number }}" }}</code> - 部屋番号</li>
-                                <li><code>{{ "{{ room.floor_area }}" }}</code> - 床面積</li>
-                                <li><code>{{ "{{ building.name }}" }}</code> - 建物名</li>
-                                <li><code>{{ "{{ building.address }}" }}</code> - 建物住所</li>
-                                <li><code>{{ "{{ owner.name }}" }}</code> - オーナー名</li>
-                                <li><code>{{ "{{ owner.address }}" }}</code> - オーナー住所</li>
-                                <li><code>{{ "{{ agent.name }}" }}</code> - 宅建士名</li>
-                                <li><code>{{ "{{ agent.license_number }}" }}</code> - 宅建士免許番号</li>
-                            </ul>
-                        </small>
+                        {{ form.file_content(class="form-control", id="file_content", rows="15") }}
                         {% for error in form.file_content.errors %}
                         <div class="text-danger">{{ error }}</div>
                         {% endfor %}
-                    </div>
-                    
-                    <div class="mb-3" id="non-html-info" style="display: none;">
-                        <div class="alert alert-info">
-                            <p><strong>注意:</strong> 非HTMLテンプレートでは、以下のプレースホルダを使用して変数を挿入できます。</p>
-                            <ul class="mt-2">
-                                <li><code>{{contract.contract_number}}</code> - 契約番号</li>
-                                <li><code>{{contract.tenant_name}}</code> - 借主名</li>
-                                <li><code>{{contract.tenant_address}}</code> - 借主住所</li>
-                                <li><code>{{owner.name}}</code> - オーナー名</li>
-                                <li><code>{{owner.address}}</code> - オーナー住所</li>
-                                <li><code>{{building.name}}</code> - 建物名</li>
-                                <li><code>{{building.address}}</code> - 建物住所</li>
-                                <li><code>{{room.room_number}}</code> - 部屋番号</li>
-                                <li><code>{{contract.rent_amount}}</code> - 月額賃料</li>
-                                <li><code>{{agent.name}}</code> - 宅建士名</li>
-                                <li><code>{{agent.license_number}}</code> - 宅建士免許番号</li>
+                        
+                        <div class="mt-3">
+                            <h6>利用可能な変数：</h6>
+                            <ul>
+                                <li><code>{{"{{"}} contract.contract_number {{"}}"}}</code> - 契約番号</li>
+                                <li><code>{{"{{"}} contract.tenant_name {{"}}"}}</code> - 借主名</li>
+                                <li><code>{{"{{"}} contract.tenant_address {{"}}"}}</code> - 借主住所</li>
+                                <li><code>{{"{{"}} contract.start_date {{"}}"}}</code> - 契約開始日</li>
+                                <li><code>{{"{{"}} contract.end_date {{"}}"}}</code> - 契約終了日</li>
+                                <li><code>{{"{{"}} contract.rent_amount {{"}}"}}</code> - 月額賃料</li>
+                                <li><code>{{"{{"}} room.room_number {{"}}"}}</code> - 部屋番号</li>
+                                <li><code>{{"{{"}} building.name {{"}}"}}</code> - 建物名</li>
+                                <li><code>{{"{{"}} building.address {{"}}"}}</code> - 建物住所</li>
+                                <li><code>{{"{{"}} owner.name {{"}}"}}</code> - オーナー名</li>
+                                <li><code>{{"{{"}} agent.name {{"}}"}}</code> - 宅建士名</li>
                             </ul>
                         </div>
                     </div>
                     
-                    <div class="d-flex justify-content-between">
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.is_default(class="form-check-input", id="is_default") }}
+                            <label class="form-check-label" for="is_default">
+                                {{ form.is_default.label }}
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
                         <a href="{{ url_for('template_list') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> 戻る
+                            <i class="fas fa-arrow-left"></i> テンプレート一覧に戻る
                         </a>
-                        {{ form.submit(class="btn btn-primary") }}
+                        {{ form.submit(class="btn btn-primary float-end") }}
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileTypeSelect = document.getElementById('file_type');
+    const htmlContent = document.getElementById('html-content');
+    const templateFile = document.getElementById('template_file');
+    
+    function updateVisibility() {
+        if (fileTypeSelect.value === 'html') {
+            htmlContent.style.display = 'block';
+            templateFile.parentElement.style.display = 'none';
+        } else {
+            htmlContent.style.display = 'none';
+            templateFile.parentElement.style.display = 'block';
+        }
+    }
+    
+    fileTypeSelect.addEventListener('change', updateVisibility);
+    updateVisibility();
+});
+</script>
 {% endblock %}
