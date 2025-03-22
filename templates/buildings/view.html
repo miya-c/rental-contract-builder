@@ -257,7 +257,7 @@
                                                     <div class="mt-4">
                                                         <h6>追加設備:</h6>
                                                         <ul class="list-group">
-                                                            {% for amenity in room.custom_amenities|tojson|fromjson %}
+                                                            {% for amenity in room.custom_amenities|fromjson %}
                                                             <li class="list-group-item">{{ amenity }}</li>
                                                             {% endfor %}
                                                         </ul>
