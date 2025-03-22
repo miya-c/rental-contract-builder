@@ -227,10 +227,40 @@ class ContractTemplateForm(FlaskForm):
     """Contract template form"""
     name = StringField('テンプレート名', validators=[DataRequired(), Length(max=100)])
     description = TextAreaField('説明', validators=[Optional()])
-    file_content = TextAreaField('テンプレート内容', validators=[DataRequired()])
+    file_content = TextAreaField('テンプレート内容（HTMLのみ）', validators=[Optional()])
     is_default = BooleanField('デフォルトテンプレート', default=False)
-    template_file = FileField('テンプレートファイルをアップロード')
+    
+    file_type = SelectField('ファイル形式', choices=[
+        ('html', 'HTML'),
+        ('excel', 'Excel'),
+        ('word', 'Word'),
+        ('pdf', 'PDF')
+    ], validators=[DataRequired()])
+    
+    template_file = FileField('テンプレートファイルをアップロード', 
+                             validators=[Optional()])
+    
     submit = SubmitField('保存')
 
     # Hidden field for edit mode
     id = HiddenField('ID')
+    
+    def validate_file_content(self, field):
+        # HTMLの場合はテンプレート内容が必要
+        if self.file_type.data == 'html' and not field.data:
+            raise ValidationError('HTML形式の場合はテンプレート内容を入力してください。')
+    
+    def validate_template_file(self, field):
+        # HTML以外の場合はファイルのアップロードが必要
+        if self.file_type.data != 'html' and not field.data:
+            raise ValidationError('ファイルをアップロードしてください。')
+        
+        # ファイル拡張子の確認
+        if field.data:
+            filename = field.data.filename
+            if self.file_type.data == 'excel' and not (filename.endswith('.xlsx') or filename.endswith('.xls')):
+                raise ValidationError('Excel形式のファイル(.xlsx, .xls)をアップロードしてください。')
+            elif self.file_type.data == 'word' and not (filename.endswith('.docx') or filename.endswith('.doc')):
+                raise ValidationError('Word形式のファイル(.docx, .doc)をアップロードしてください。')
+            elif self.file_type.data == 'pdf' and not filename.endswith('.pdf'):
+                raise ValidationError('PDF形式のファイル(.pdf)をアップロードしてください。')

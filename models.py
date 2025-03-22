@@ -143,6 +143,9 @@ class ContractTemplate(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
     file_content = db.Column(db.Text, nullable=False)  # HTML/Template content
+    file_type = db.Column(db.String(20), nullable=False, default='html')  # html, excel, word, pdf
+    file_binary = db.Column(db.LargeBinary, nullable=True)  # For storing binary content
+    file_name = db.Column(db.String(255), nullable=True)  # Original filename
     is_default = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
