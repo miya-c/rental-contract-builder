@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+
+{% block title %}賃貸借契約書作成システム - 宅建士管理{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-id-card"></i> 宅建士管理</h1>
+            <a href="{{ url_for('add_agent') }}" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i> 新規宅建士登録
+            </a>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h5 class="mb-0">宅建士一覧</h5>
+            </div>
+            <div class="card-body">
+                {% if agents %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>宅建士名</th>
+                                <th>免許番号</th>
+                                <th>登録日</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for agent in agents %}
+                            <tr>
+                                <td>{{ agent.id }}</td>
+                                <td>{{ agent.name }}</td>
+                                <td>{{ agent.license_number }}</td>
+                                <td>{{ agent.registration_date.strftime('%Y-%m-%d') if agent.registration_date else '-' }}</td>
+                                <td>
+                                    <a href="{{ url_for('edit_agent', agent_id=agent.id) }}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-edit"></i> 編集
+                                    </a>
+                                    <form method="POST" action="{{ url_for('delete_agent', agent_id=agent.id) }}" 
+                                          class="d-inline delete-confirm">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash-alt"></i> 削除
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    宅建士が登録されていません。「新規宅建士登録」ボタンから登録してください。
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

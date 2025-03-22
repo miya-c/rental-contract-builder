@@ -1,0 +1,312 @@
+{% extends 'layout.html' %}
+
+{% block title %}賃貸借契約書作成システム - 建物詳細{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-building"></i> 建物詳細</h1>
+            <div>
+                <a href="{{ url_for('edit_building', building_id=building.id) }}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> 建物情報を編集
+                </a>
+                <a href="{{ url_for('add_room', building_id=building.id) }}" class="btn btn-success">
+                    <i class="fas fa-plus-circle"></i> 部屋を追加
+                </a>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h5 class="mb-0">建物情報 - {{ building.name }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table">
+                            <tr>
+                                <th style="width: 150px;">建物名:</th>
+                                <td>{{ building.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>住所:</th>
+                                <td>{{ building.address }}</td>
+                            </tr>
+                            <tr>
+                                <th>オーナー:</th>
+                                <td>{{ building.owner.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>構造:</th>
+                                <td>{{ building.structure }}</td>
+                            </tr>
+                            <tr>
+                                <th>屋根構造:</th>
+                                <td>{{ building.roof_structure or '-' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table">
+                            <tr>
+                                <th style="width: 150px;">階数:</th>
+                                <td>{{ building.floors }}階</td>
+                            </tr>
+                            <tr>
+                                <th>総戸数:</th>
+                                <td>{{ building.total_units }}戸</td>
+                            </tr>
+                            <tr>
+                                <th>建物の種類:</th>
+                                <td>{{ building.building_type }}</td>
+                            </tr>
+                            <tr>
+                                <th>新築年月:</th>
+                                <td>{{ building.construction_date.strftime('%Y年%m月%d日') if building.construction_date else '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>備考:</th>
+                                <td>{{ building.notes or '-' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h5 class="mb-0">部屋一覧</h5>
+            </div>
+            <div class="card-body">
+                {% if rooms %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>部屋番号</th>
+                                <th>間取り</th>
+                                <th>床面積</th>
+                                <th>階数</th>
+                                <th>設備</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for room in rooms %}
+                            <tr>
+                                <td>{{ room.room_number }}</td>
+                                <td>{{ room.layout }}</td>
+                                <td>{{ room.floor_area }} m²</td>
+                                <td>{{ room.floor }}階</td>
+                                <td>
+                                    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#amenitiesModal{{ room.id }}">
+                                        <i class="fas fa-list"></i> 設備一覧
+                                    </button>
+                                    
+                                    <!-- Amenities Modal -->
+                                    <div class="modal fade" id="amenitiesModal{{ room.id }}" tabindex="-1" aria-labelledby="amenitiesModalLabel{{ room.id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="amenitiesModalLabel{{ room.id }}">{{ building.name }} {{ room.room_number }} - 設備一覧</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <ul class="list-group">
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    台所
+                                                                    {% if room.has_kitchen %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    トイレ
+                                                                    {% if room.has_toilet %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    浴室
+                                                                    {% if room.has_bath %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    シャワー
+                                                                    {% if room.has_shower %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    洗面所
+                                                                    {% if room.has_washroom %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    給湯
+                                                                    {% if room.has_hot_water %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    コンロ
+                                                                    {% if room.has_stove %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    エアコン
+                                                                    {% if room.has_air_conditioner %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <ul class="list-group">
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    照明器具
+                                                                    {% if room.has_lighting %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    電話設置
+                                                                    {% if room.has_telephone %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    インターネット回線
+                                                                    {% if room.has_internet %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    火災警報器
+                                                                    {% if room.has_fire_alarm %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    共聴設備
+                                                                    {% if room.has_tv_connection %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    エレベーター
+                                                                    {% if room.has_elevator_access %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    駐車場
+                                                                    {% if room.has_parking %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    駐輪場
+                                                                    {% if room.has_bicycle_parking %}
+                                                                    <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                                                    {% else %}
+                                                                    <span class="badge bg-secondary"><i class="fas fa-times"></i></span>
+                                                                    {% endif %}
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {% if room.custom_amenities %}
+                                                    <div class="mt-4">
+                                                        <h6>追加設備:</h6>
+                                                        <ul class="list-group">
+                                                            {% for amenity in room.custom_amenities|tojson|fromjson %}
+                                                            <li class="list-group-item">{{ amenity }}</li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                    {% endif %}
+                                                    
+                                                    {% if room.notes %}
+                                                    <div class="mt-4">
+                                                        <h6>備考:</h6>
+                                                        <p>{{ room.notes }}</p>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('edit_room', room_id=room.id) }}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-edit"></i> 編集
+                                    </a>
+                                    <form method="POST" action="{{ url_for('delete_room', room_id=room.id) }}" 
+                                          class="d-inline delete-confirm">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash-alt"></i> 削除
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    この建物には部屋が登録されていません。「部屋を追加」ボタンから登録してください。
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <a href="{{ url_for('building_list') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> 建物一覧に戻る
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

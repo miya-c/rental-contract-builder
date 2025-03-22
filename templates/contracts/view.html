@@ -1,0 +1,193 @@
+{% extends 'layout.html' %}
+
+{% block title %}賃貸借契約書作成システム - 契約書詳細{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-file-contract"></i> 契約書詳細</h1>
+            <div>
+                <a href="{{ url_for('download_contract_pdf', contract_id=contract.id) }}" class="btn btn-primary">
+                    <i class="fas fa-file-pdf"></i> PDFダウンロード
+                </a>
+                <form method="POST" action="{{ url_for('regenerate_contract_pdf', contract_id=contract.id) }}" class="d-inline">
+                    <button type="submit" class="btn btn-info">
+                        <i class="fas fa-sync-alt"></i> PDF再生成
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">契約情報 - {{ contract.contract_number }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="border-bottom pb-2 mb-3">借主情報</h6>
+                        <table class="table">
+                            <tr>
+                                <th style="width: 150px;">借主名:</th>
+                                <td>{{ contract.tenant_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>住所:</th>
+                                <td>{{ contract.tenant_address }}</td>
+                            </tr>
+                            <tr>
+                                <th>電話番号:</th>
+                                <td>{{ contract.tenant_phone or '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>メールアドレス:</th>
+                                <td>{{ contract.tenant_email or '-' }}</td>
+                            </tr>
+                        </table>
+                        
+                        <h6 class="border-bottom pb-2 mb-3 mt-4">契約期間・家賃</h6>
+                        <table class="table">
+                            <tr>
+                                <th style="width: 150px;">契約開始日:</th>
+                                <td>{{ contract.start_date.strftime('%Y年%m月%d日') }}</td>
+                            </tr>
+                            <tr>
+                                <th>契約終了日:</th>
+                                <td>{{ contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else '期限の定めなし' }}</td>
+                            </tr>
+                            <tr>
+                                <th>月額賃料:</th>
+                                <td>{{ '{:,}'.format(contract.rent_amount) }}円</td>
+                            </tr>
+                            <tr>
+                                <th>敷金:</th>
+                                <td>{{ '{:,}'.format(contract.security_deposit) }}円 if contract.security_deposit else '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>礼金:</th>
+                                <td>{{ '{:,}'.format(contract.key_money) }}円 if contract.key_money else '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>管理費:</th>
+                                <td>{{ '{:,}'.format(contract.management_fee) }}円 if contract.management_fee else '-' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="border-bottom pb-2 mb-3">物件情報</h6>
+                        <table class="table">
+                            <tr>
+                                <th style="width: 150px;">建物名:</th>
+                                <td>{{ contract.room.building.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>住所:</th>
+                                <td>{{ contract.room.building.address }}</td>
+                            </tr>
+                            <tr>
+                                <th>部屋番号:</th>
+                                <td>{{ contract.room.room_number }}</td>
+                            </tr>
+                            <tr>
+                                <th>間取り:</th>
+                                <td>{{ contract.room.layout }}</td>
+                            </tr>
+                            <tr>
+                                <th>面積:</th>
+                                <td>{{ contract.room.floor_area }} m²</td>
+                            </tr>
+                            <tr>
+                                <th>階:</th>
+                                <td>{{ contract.room.floor }}階</td>
+                            </tr>
+                        </table>
+                        
+                        <h6 class="border-bottom pb-2 mb-3 mt-4">契約関係者</h6>
+                        <table class="table">
+                            <tr>
+                                <th style="width: 150px;">貸主:</th>
+                                <td>{{ contract.room.building.owner.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>貸主住所:</th>
+                                <td>{{ contract.room.building.owner.address }}</td>
+                            </tr>
+                            <tr>
+                                <th>宅建士:</th>
+                                <td>{{ contract.agent.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>免許番号:</th>
+                                <td>{{ contract.agent.license_number }}</td>
+                            </tr>
+                            <tr>
+                                <th>作成者:</th>
+                                <td>{{ contract.created_by.username }}</td>
+                            </tr>
+                            <tr>
+                                <th>作成日:</th>
+                                <td>{{ contract.created_at.strftime('%Y年%m月%d日') }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                {% if contract.special_terms or contract.custom_special_terms %}
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <h6 class="border-bottom pb-2 mb-3">特約条項</h6>
+                        
+                        {% if contract.special_terms %}
+                        <div class="mb-4">
+                            <h6>選択された特約条項:</h6>
+                            <div class="list-group mb-3">
+                                {% for term in contract.special_terms %}
+                                <div class="list-group-item">
+                                    <h6>{{ term.title }}</h6>
+                                    <p class="mb-0">{{ term.content }}</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if contract.custom_special_terms %}
+                        <div>
+                            <h6>追加特約条項:</h6>
+                            <div class="card">
+                                <div class="card-body">
+                                    {{ contract.custom_special_terms|nl2br }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <a href="{{ url_for('contract_list') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> 契約書一覧に戻る
+            </a>
+            <form method="POST" action="{{ url_for('delete_contract', contract_id=contract.id) }}" 
+                  class="d-inline delete-confirm float-end">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i> 契約書を削除
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// nl2br filter for Jinja2
+document.addEventListener('DOMContentLoaded', function() {
+    // This is handled by the server-side nl2br filter
+});
+</script>
+{% endblock %}

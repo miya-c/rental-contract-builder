@@ -1,0 +1,220 @@
+{% extends 'layout.html' %}
+
+{% block title %}賃貸借契約書作成システム - 契約書作成{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="card shadow">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="fas fa-file-signature"></i> 新規契約書作成</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('create_contract') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="mb-3">借主情報</h5>
+                            
+                            <div class="mb-3 required">
+                                <label for="tenant_name" class="form-label">{{ form.tenant_name.label }}</label>
+                                {{ form.tenant_name(class="form-control", id="tenant_name") }}
+                                {% for error in form.tenant_name.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="mb-3 required">
+                                <label for="tenant_address" class="form-label">{{ form.tenant_address.label }}</label>
+                                {{ form.tenant_address(class="form-control", id="tenant_address") }}
+                                {% for error in form.tenant_address.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="tenant_phone" class="form-label">{{ form.tenant_phone.label }}</label>
+                                {{ form.tenant_phone(class="form-control", id="tenant_phone") }}
+                                {% for error in form.tenant_phone.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="tenant_email" class="form-label">{{ form.tenant_email.label }}</label>
+                                {{ form.tenant_email(class="form-control", id="tenant_email", type="email") }}
+                                {% for error in form.tenant_email.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5 class="mb-3">契約情報</h5>
+                            
+                            <div class="mb-3 required">
+                                <label for="start_date" class="form-label">{{ form.start_date.label }}</label>
+                                {{ form.start_date(class="form-control", id="start_date", type="date") }}
+                                {% for error in form.start_date.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="end_date" class="form-label">{{ form.end_date.label }}</label>
+                                <small class="text-muted d-block mb-2">※期限の定めなしの場合は空欄</small>
+                                {{ form.end_date(class="form-control", id="end_date", type="date") }}
+                                {% for error in form.end_date.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="mb-3 required">
+                                <label for="rent_amount" class="form-label">{{ form.rent_amount.label }}</label>
+                                {{ form.rent_amount(class="form-control", id="rent_amount", type="number") }}
+                                {% for error in form.rent_amount.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="security_deposit" class="form-label">{{ form.security_deposit.label }}</label>
+                                    {{ form.security_deposit(class="form-control", id="security_deposit", type="number") }}
+                                    {% for error in form.security_deposit.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="key_money" class="form-label">{{ form.key_money.label }}</label>
+                                    {{ form.key_money(class="form-control", id="key_money", type="number") }}
+                                    {% for error in form.key_money.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="management_fee" class="form-label">{{ form.management_fee.label }}</label>
+                                    {{ form.management_fee(class="form-control", id="management_fee", type="number") }}
+                                    {% for error in form.management_fee.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <h5 class="mb-3">物件選択</h5>
+                            
+                            <div class="mb-3 required">
+                                <label for="room_id" class="form-label">{{ form.room_id.label }}</label>
+                                {{ form.room_id(class="form-control", id="room_id") }}
+                                {% for error in form.room_id.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div id="property-details-container" style="display: none;">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h6 class="card-title">建物情報</h6>
+                                        <div id="building-info"></div>
+                                        
+                                        <h6 class="card-title mt-3">部屋情報</h6>
+                                        <div id="room-info"></div>
+                                        
+                                        <h6 class="card-title mt-3">オーナー情報</h6>
+                                        <div id="owner-info"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <h5 class="mb-3">宅建士選択</h5>
+                            
+                            <div class="mb-3 required">
+                                <label for="agent_id" class="form-label">{{ form.agent_id.label }}</label>
+                                {{ form.agent_id(class="form-control", id="agent_id") }}
+                                {% for error in form.agent_id.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div id="agent-info-container" style="display: none;">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h6 class="card-title">宅建士情報</h6>
+                                        <div id="agent-info"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <h5 class="mb-3">テンプレート選択</h5>
+                            
+                            <div class="mb-3 required">
+                                <label for="template_id" class="form-label">{{ form.template_id.label }}</label>
+                                {{ form.template_id(class="form-control", id="template_id") }}
+                                {% for error in form.template_id.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h5 class="mb-3">特約条項</h5>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">登録済み特約条項から選択</label>
+                                <div class="custom-amenities-container p-3">
+                                    {% for choice in form.special_terms %}
+                                    <div class="form-check mb-2">
+                                        {{ choice(class="form-check-input") }}
+                                        <label class="form-check-label" for="{{ choice.id }}">{{ choice.label }}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div id="special-terms-preview-container" style="display: none;" class="mb-3">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">選択された特約条項プレビュー</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="special-terms-preview"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="custom_special_terms" class="form-label">{{ form.custom_special_terms.label }}</label>
+                                {{ form.custom_special_terms(class="form-control", id="custom_special_terms", rows="5") }}
+                                <small class="text-muted">選択した特約条項に加えて、契約書に記載する追加の特約条項を入力してください。</small>
+                                {% for error in form.custom_special_terms.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('contract_list') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> 戻る
+                        </a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

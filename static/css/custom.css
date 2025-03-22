@@ -1,0 +1,123 @@
+/* Custom styles for Lease Contract System */
+
+/* Global styles */
+body {
+    padding-top: 60px;
+    padding-bottom: 40px;
+}
+
+.required label:after {
+    content: " *";
+    color: var(--bs-danger);
+}
+
+/* Sidebar styles */
+.sidebar {
+    position: fixed;
+    top: 56px;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar-sticky {
+    position: relative;
+    top: 0;
+    height: calc(100vh - 48px);
+    padding-top: .5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Dashboard cards */
+.dashboard-card {
+    transition: transform 0.3s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Custom form styles */
+.custom-amenities-container {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.template-editor {
+    min-height: 400px;
+    font-family: monospace;
+}
+
+/* Contract view page */
+.contract-details {
+    margin-bottom: 30px;
+}
+
+.contract-header {
+    border-bottom: 1px solid var(--bs-gray-300);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+
+.special-terms-box {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+/* Alerts and notifications */
+.alert-container {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    z-index: 1050;
+    max-width: 350px;
+}
+
+.alert-dismissible {
+    opacity: 0.95;
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .print-only {
+        display: block !important;
+    }
+    
+    body {
+        padding: 0;
+        font-size: 12pt;
+    }
+    
+    .container {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: static;
+        height: auto;
+        padding: 15px;
+    }
+    
+    .sidebar-sticky {
+        height: auto;
+    }
+    
+    body {
+        padding-top: 56px;
+    }
+}

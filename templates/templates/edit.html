@@ -1,0 +1,88 @@
+{% extends 'layout.html' %}
+
+{% block title %}賃貸借契約書作成システム - テンプレート編集{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="card shadow">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="fas fa-copy"></i> テンプレート編集 - {{ template.name }}</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('edit_template', template_id=template.id) }}" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    {{ form.id }}
+                    
+                    <div class="mb-3 required">
+                        <label for="name" class="form-label">{{ form.name.label }}</label>
+                        {{ form.name(class="form-control", id="name") }}
+                        {% for error in form.name.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">{{ form.description.label }}</label>
+                        {{ form.description(class="form-control", id="description", rows="3") }}
+                        {% for error in form.description.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.is_default(class="form-check-input", id="is_default") }}
+                        <label class="form-check-label" for="is_default">{{ form.is_default.label }}</label>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="template_file" class="form-label">{{ form.template_file.label }}</label>
+                        {{ form.template_file(class="form-control", id="template_file", accept=".html,.txt") }}
+                        <small class="text-muted">HTMLファイルまたはテキストファイルをアップロードしてください。アップロードする場合、下のテンプレート内容は上書きされます。</small>
+                        {% for error in form.template_file.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3 required">
+                        <label for="file_content" class="form-label">{{ form.file_content.label }}</label>
+                        <div class="d-flex justify-content-end mb-2">
+                            <button id="preview-template" class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i> プレビュー
+                            </button>
+                        </div>
+                        {{ form.file_content(class="form-control template-editor", id="file_content", rows="15") }}
+                        <small class="text-muted">
+                            テンプレート内で使用可能な変数:
+                            <ul class="mt-2">
+                                <li><code>{{ "{{ contract.tenant_name }}" }}</code> - 借主名</li>
+                                <li><code>{{ "{{ contract.tenant_address }}" }}</code> - 借主住所</li>
+                                <li><code>{{ "{{ contract.start_date }}" }}</code> - 契約開始日</li>
+                                <li><code>{{ "{{ contract.rent_amount }}" }}</code> - 月額賃料</li>
+                                <li><code>{{ "{{ room.room_number }}" }}</code> - 部屋番号</li>
+                                <li><code>{{ "{{ room.floor_area }}" }}</code> - 床面積</li>
+                                <li><code>{{ "{{ building.name }}" }}</code> - 建物名</li>
+                                <li><code>{{ "{{ building.address }}" }}</code> - 建物住所</li>
+                                <li><code>{{ "{{ owner.name }}" }}</code> - オーナー名</li>
+                                <li><code>{{ "{{ owner.address }}" }}</code> - オーナー住所</li>
+                                <li><code>{{ "{{ agent.name }}" }}</code> - 宅建士名</li>
+                                <li><code>{{ "{{ agent.license_number }}" }}</code> - 宅建士免許番号</li>
+                            </ul>
+                        </small>
+                        {% for error in form.file_content.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('template_list') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> 戻る
+                        </a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

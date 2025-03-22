@@ -1,0 +1,204 @@
+{% extends 'layout.html' %}
+
+{% block title %}賃貸借契約書作成システム - 部屋登録{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="fas fa-door-open"></i> 新規部屋登録 - {{ building.name }}</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_room', building_id=building.id) }}">
+                    {{ form.hidden_tag() }}
+                    {{ form.building_id }}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3 required">
+                            <label for="room_number" class="form-label">{{ form.room_number.label }}</label>
+                            {{ form.room_number(class="form-control", id="room_number") }}
+                            {% for error in form.room_number.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3 required">
+                            <label for="layout" class="form-label">{{ form.layout.label }}</label>
+                            {{ form.layout(class="form-control", id="layout") }}
+                            {% for error in form.layout.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3 required">
+                            <label for="floor_area" class="form-label">{{ form.floor_area.label }}</label>
+                            {{ form.floor_area(class="form-control", id="floor_area", type="number", step="0.01") }}
+                            {% for error in form.floor_area.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3 required">
+                            <label for="floor" class="form-label">{{ form.floor.label }}</label>
+                            {{ form.floor(class="form-control", id="floor", type="number") }}
+                            {% for error in form.floor.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <h5 class="mt-4 mb-3">設備情報</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_kitchen(class="form-check-input", id="has_kitchen") }}
+                                <label class="form-check-label" for="has_kitchen">{{ form.has_kitchen.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_toilet(class="form-check-input", id="has_toilet") }}
+                                <label class="form-check-label" for="has_toilet">{{ form.has_toilet.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_bath(class="form-check-input", id="has_bath") }}
+                                <label class="form-check-label" for="has_bath">{{ form.has_bath.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_shower(class="form-check-input", id="has_shower") }}
+                                <label class="form-check-label" for="has_shower">{{ form.has_shower.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_washroom(class="form-check-input", id="has_washroom") }}
+                                <label class="form-check-label" for="has_washroom">{{ form.has_washroom.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_hot_water(class="form-check-input", id="has_hot_water") }}
+                                <label class="form-check-label" for="has_hot_water">{{ form.has_hot_water.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_stove(class="form-check-input", id="has_stove") }}
+                                <label class="form-check-label" for="has_stove">{{ form.has_stove.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_air_conditioner(class="form-check-input", id="has_air_conditioner") }}
+                                <label class="form-check-label" for="has_air_conditioner">{{ form.has_air_conditioner.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_lighting(class="form-check-input", id="has_lighting") }}
+                                <label class="form-check-label" for="has_lighting">{{ form.has_lighting.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_telephone(class="form-check-input", id="has_telephone") }}
+                                <label class="form-check-label" for="has_telephone">{{ form.has_telephone.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_internet(class="form-check-input", id="has_internet") }}
+                                <label class="form-check-label" for="has_internet">{{ form.has_internet.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_fire_alarm(class="form-check-input", id="has_fire_alarm") }}
+                                <label class="form-check-label" for="has_fire_alarm">{{ form.has_fire_alarm.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_tv_connection(class="form-check-input", id="has_tv_connection") }}
+                                <label class="form-check-label" for="has_tv_connection">{{ form.has_tv_connection.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_elevator_access(class="form-check-input", id="has_elevator_access") }}
+                                <label class="form-check-label" for="has_elevator_access">{{ form.has_elevator_access.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_parking(class="form-check-input", id="has_parking") }}
+                                <label class="form-check-label" for="has_parking">{{ form.has_parking.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_bicycle_parking(class="form-check-input", id="has_bicycle_parking") }}
+                                <label class="form-check-label" for="has_bicycle_parking">{{ form.has_bicycle_parking.label }}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                {{ form.has_private_garden(class="form-check-input", id="has_private_garden") }}
+                                <label class="form-check-label" for="has_private_garden">{{ form.has_private_garden.label }}</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 custom-amenities-container">
+                        <label for="custom_amenities" class="form-label">{{ form.custom_amenities.label }}</label>
+                        {{ form.custom_amenities(class="form-control", id="custom_amenities", rows="2") }}
+                        <small class="text-muted">例: エレベーター, オートロック, 宅配ボックス</small>
+                        {% for error in form.custom_amenities.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">{{ form.notes.label }}</label>
+                        {{ form.notes(class="form-control", id="notes", rows="3") }}
+                        {% for error in form.notes.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('view_building', building_id=building.id) }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> 戻る
+                        </a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

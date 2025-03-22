@@ -1,0 +1,134 @@
+{% extends 'layout.html' %}
+
+{% block title %}賃貸借契約書作成システム - 建物編集{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="fas fa-building"></i> 建物編集 - {{ building.name }}</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('edit_building', building_id=building.id) }}">
+                    {{ form.hidden_tag() }}
+                    {{ form.id }}
+                    
+                    <div class="mb-3 required">
+                        <label for="name" class="form-label">{{ form.name.label }}</label>
+                        {{ form.name(class="form-control", id="name") }}
+                        {% for error in form.name.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3 required">
+                        <label for="address" class="form-label">{{ form.address.label }}</label>
+                        {{ form.address(class="form-control", id="address") }}
+                        {% for error in form.address.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3 required">
+                        <label for="structure" class="form-label">{{ form.structure.label }}</label>
+                        {{ form.structure(class="form-control", id="structure") }}
+                        {% for error in form.structure.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3" id="custom-structure-container" style="display: none;">
+                        <label for="custom_structure" class="form-label">{{ form.custom_structure.label }}</label>
+                        {{ form.custom_structure(class="form-control", id="custom_structure") }}
+                        {% for error in form.custom_structure.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="roof_structure" class="form-label">{{ form.roof_structure.label }}</label>
+                        {{ form.roof_structure(class="form-control", id="roof_structure") }}
+                        {% for error in form.roof_structure.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3" id="custom-roof-structure-container" style="display: none;">
+                        <label for="custom_roof_structure" class="form-label">{{ form.custom_roof_structure.label }}</label>
+                        {{ form.custom_roof_structure(class="form-control", id="custom_roof_structure") }}
+                        {% for error in form.custom_roof_structure.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3 required">
+                            <label for="floors" class="form-label">{{ form.floors.label }}</label>
+                            {{ form.floors(class="form-control", id="floors", type="number", min="1") }}
+                            {% for error in form.floors.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3 required">
+                            <label for="total_units" class="form-label">{{ form.total_units.label }}</label>
+                            {{ form.total_units(class="form-control", id="total_units", type="number", min="1") }}
+                            {% for error in form.total_units.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 required">
+                        <label for="building_type" class="form-label">{{ form.building_type.label }}</label>
+                        {{ form.building_type(class="form-control", id="building_type") }}
+                        {% for error in form.building_type.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3" id="custom-building-type-container" style="display: none;">
+                        <label for="custom_building_type" class="form-label">{{ form.custom_building_type.label }}</label>
+                        {{ form.custom_building_type(class="form-control", id="custom_building_type") }}
+                        {% for error in form.custom_building_type.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="construction_date" class="form-label">{{ form.construction_date.label }}</label>
+                        {{ form.construction_date(class="form-control", id="construction_date", type="date") }}
+                        {% for error in form.construction_date.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3 required">
+                        <label for="owner_id" class="form-label">{{ form.owner_id.label }}</label>
+                        {{ form.owner_id(class="form-control", id="owner_id") }}
+                        {% for error in form.owner_id.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">{{ form.notes.label }}</label>
+                        {{ form.notes(class="form-control", id="notes", rows="3") }}
+                        {% for error in form.notes.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('building_list') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> 戻る
+                        </a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

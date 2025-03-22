@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+{% block title %}賃貸借契約書作成システム - 宅建士編集{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="fas fa-id-card-alt"></i> 宅建士編集 - {{ agent.name }}</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('edit_agent', agent_id=agent.id) }}">
+                    {{ form.hidden_tag() }}
+                    {{ form.id }}
+                    
+                    <div class="mb-3 required">
+                        <label for="name" class="form-label">{{ form.name.label }}</label>
+                        {{ form.name(class="form-control", id="name") }}
+                        {% for error in form.name.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3 required">
+                        <label for="license_number" class="form-label">{{ form.license_number.label }}</label>
+                        {{ form.license_number(class="form-control", id="license_number") }}
+                        {% for error in form.license_number.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="registration_date" class="form-label">{{ form.registration_date.label }}</label>
+                        {{ form.registration_date(class="form-control", id="registration_date", type="date") }}
+                        {% for error in form.registration_date.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">{{ form.notes.label }}</label>
+                        {{ form.notes(class="form-control", id="notes", rows="3") }}
+                        {% for error in form.notes.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('agent_list') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> 戻る
+                        </a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

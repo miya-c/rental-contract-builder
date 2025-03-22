@@ -1,0 +1,172 @@
+{% extends 'layout.html' %}
+
+{% block title %}賃貸借契約書作成システム - ダッシュボード{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="mb-4"><i class="fas fa-tachometer-alt"></i> ダッシュボード</h1>
+        
+        <!-- Stats Cards -->
+        <div class="row">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2 dashboard-card">
+                    <div class="card-body">
+                        <div class="row g-0 align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    契約書</div>
+                                <div class="h5 mb-0 font-weight-bold">{{ contracts_count }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-file-contract fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2 dashboard-card">
+                    <div class="card-body">
+                        <div class="row g-0 align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    建物</div>
+                                <div class="h5 mb-0 font-weight-bold">{{ buildings_count }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-building fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2 dashboard-card">
+                    <div class="card-body">
+                        <div class="row g-0 align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    部屋</div>
+                                <div class="h5 mb-0 font-weight-bold">{{ rooms_count }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-door-open fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2 dashboard-card">
+                    <div class="card-body">
+                        <div class="row g-0 align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    オーナー</div>
+                                <div class="h5 mb-0 font-weight-bold">{{ owners_count }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-user-tie fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h5 class="mb-0"><i class="fas fa-bolt"></i> クイックアクション</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <a href="{{ url_for('create_contract') }}" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-file-signature"></i> 新規契約書作成
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="{{ url_for('add_building') }}" class="btn btn-success btn-lg w-100">
+                                    <i class="fas fa-plus-circle"></i> 新規建物登録
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="{{ url_for('add_owner') }}" class="btn btn-info btn-lg w-100">
+                                    <i class="fas fa-user-plus"></i> 新規オーナー登録
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="{{ url_for('add_agent') }}" class="btn btn-secondary btn-lg w-100">
+                                    <i class="fas fa-id-card"></i> 新規宅建士登録
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Contracts -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h5 class="mb-0"><i class="fas fa-history"></i> 最近の契約書</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>契約番号</th>
+                                        <th>借主名</th>
+                                        <th>物件</th>
+                                        <th>契約日</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if recent_contracts %}
+                                        {% for contract in recent_contracts %}
+                                        <tr>
+                                            <td>{{ contract.contract_number }}</td>
+                                            <td>{{ contract.tenant_name }}</td>
+                                            <td>{{ contract.room.building.name }} {{ contract.room.room_number }}</td>
+                                            <td>{{ contract.created_at.strftime('%Y-%m-%d') }}</td>
+                                            <td>
+                                                <a href="{{ url_for('view_contract', contract_id=contract.id) }}" class="btn btn-info btn-sm">
+                                                    <i class="fas fa-eye"></i> 表示
+                                                </a>
+                                                <a href="{{ url_for('download_contract_pdf', contract_id=contract.id) }}" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-file-pdf"></i> PDF
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="5" class="text-center">契約書はまだありません</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-end mt-3">
+                            <a href="{{ url_for('contract_list') }}" class="btn btn-primary">
+                                <i class="fas fa-list"></i> すべての契約書を表示
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'layout.html' %}
+
+{% block title %}賃貸借契約書作成システム - オーナー管理{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-user-tie"></i> オーナー管理</h1>
+            <a href="{{ url_for('add_owner') }}" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i> 新規オーナー登録
+            </a>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h5 class="mb-0">オーナー一覧</h5>
+            </div>
+            <div class="card-body">
+                {% if owners %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>オーナー名</th>
+                                <th>住所</th>
+                                <th>電話番号</th>
+                                <th>メールアドレス</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for owner in owners %}
+                            <tr>
+                                <td>{{ owner.id }}</td>
+                                <td>{{ owner.name }}</td>
+                                <td>{{ owner.address }}</td>
+                                <td>{{ owner.phone or '-' }}</td>
+                                <td>{{ owner.email or '-' }}</td>
+                                <td>
+                                    <a href="{{ url_for('edit_owner', owner_id=owner.id) }}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-edit"></i> 編集
+                                    </a>
+                                    <form method="POST" action="{{ url_for('delete_owner', owner_id=owner.id) }}" 
+                                          class="d-inline delete-confirm">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash-alt"></i> 削除
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    オーナーが登録されていません。「新規オーナー登録」ボタンから登録してください。
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

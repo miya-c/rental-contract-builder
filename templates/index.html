@@ -1,0 +1,104 @@
+{% extends 'layout.html' %}
+
+{% block title %}賃貸借契約書作成システム - ホーム{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto text-center">
+        <div class="card shadow-lg border-0 rounded-lg">
+            <div class="card-header">
+                <h1 class="display-5 mb-0"><i class="fas fa-file-contract"></i> 賃貸借契約書作成システム</h1>
+            </div>
+            <div class="card-body">
+                <p class="lead">全国宅地建物取引業連合会の賃貸借契約書を雛形にした契約書作成システムです。</p>
+                <hr>
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-file-signature fa-2x mb-3 text-primary"></i><br>
+                                    契約書作成
+                                </h5>
+                                <p class="card-text">賃貸借契約書を簡単に作成し、PDFでダウンロード</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-building fa-2x mb-3 text-success"></i><br>
+                                    物件管理
+                                </h5>
+                                <p class="card-text">建物や部屋の情報を効率的に管理</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-user-tie fa-2x mb-3 text-info"></i><br>
+                                    オーナー・宅建士管理
+                                </h5>
+                                <p class="card-text">取引に関わる人の情報を整理</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-sign-in-alt"></i> ログイン
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4 shadow-lg border-0 rounded-lg">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-info-circle"></i> システムの特徴</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="feature-item mb-4">
+                            <h4><i class="fas fa-users text-primary"></i> ユーザー管理</h4>
+                            <ul class="list-unstyled ps-3">
+                                <li><i class="fas fa-check text-success"></i> 管理者と一般ユーザーの権限分け</li>
+                                <li><i class="fas fa-check text-success"></i> 宅建士情報の管理</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="feature-item mb-4">
+                            <h4><i class="fas fa-building text-primary"></i> 物件管理</h4>
+                            <ul class="list-unstyled ps-3">
+                                <li><i class="fas fa-check text-success"></i> 構造や屋根構造などの詳細な建物情報</li>
+                                <li><i class="fas fa-check text-success"></i> 部屋ごとの設備情報管理</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature-item mb-4">
+                            <h4><i class="fas fa-file-alt text-primary"></i> 契約書作成</h4>
+                            <ul class="list-unstyled ps-3">
+                                <li><i class="fas fa-check text-success"></i> 全国宅地建物取引業連合会の賃貸借契約書雛形</li>
+                                <li><i class="fas fa-check text-success"></i> 特約条項のライブラリ管理</li>
+                                <li><i class="fas fa-check text-success"></i> PDF生成とダウンロード</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="feature-item mb-4">
+                            <h4><i class="fas fa-copy text-primary"></i> テンプレート管理</h4>
+                            <ul class="list-unstyled ps-3">
+                                <li><i class="fas fa-check text-success"></i> カスタマイズ可能な契約書テンプレート</li>
+                                <li><i class="fas fa-check text-success"></i> テンプレートのインポート機能</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
