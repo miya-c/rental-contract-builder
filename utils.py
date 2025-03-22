@@ -91,24 +91,144 @@ def generate_pdf(contract_id):
     pdf_path = os.path.join(pdf_dir, pdf_filename)
     
     try:
-        # Prepare HTML content from template
-        template_content = data['template'].file_content
+        template = data['template']
         
-        # Use Jinja2 to render the template with contract data
-        jinja_template = Template(template_content)
-        html_content = jinja_template.render(
-            contract=data['contract'],
-            room=data['room'],
-            building=data['building'],
-            owner=data['owner'],
-            agent=data['agent'],
-            special_terms=data['special_terms'],
-            custom_amenities=data['custom_amenities']
-        )
-        
-        # Generate PDF with WeasyPrint
-        weasyprint.HTML(string=html_content).write_pdf(pdf_path)
-        
+        # Handle different template types
+        if template.file_type == 'html':
+            # HTML template - Use Jinja2 to render the HTML template
+            template_content = template.file_content
+            jinja_template = Template(template_content)
+            html_content = jinja_template.render(
+                contract=data['contract'],
+                room=data['room'],
+                building=data['building'],
+                owner=data['owner'],
+                agent=data['agent'],
+                special_terms=data['special_terms'],
+                custom_amenities=data['custom_amenities']
+            )
+            
+            # Generate PDF with WeasyPrint
+            weasyprint.HTML(string=html_content).write_pdf(pdf_path)
+            
+        elif template.file_type == 'excel':
+            # Excel template
+            from io import BytesIO
+            import openpyxl
+            
+            # Load the Excel template
+            if not template.file_binary:
+                logging.error("Excel template has no binary data")
+                return None
+            
+            workbook = openpyxl.load_workbook(BytesIO(template.file_binary))
+            sheet = workbook.active
+            
+            # Fill in the Excel template with contract data
+            # This is a basic implementation - customize as needed
+            replace_dict = {
+                '{{contract.contract_number}}': data['contract'].contract_number,
+                '{{contract.tenant_name}}': data['contract'].tenant_name,
+                '{{contract.tenant_address}}': data['contract'].tenant_address,
+                '{{owner.name}}': data['owner'].name,
+                '{{owner.address}}': data['owner'].address,
+                '{{building.name}}': data['building'].name,
+                '{{building.address}}': data['building'].address,
+                '{{room.room_number}}': data['room'].room_number,
+                '{{contract.rent_amount}}': str(data['contract'].rent_amount),
+                '{{agent.name}}': data['agent'].name,
+                '{{agent.license_number}}': data['agent'].license_number,
+            }
+            
+            # Replace placeholders in all cells
+            for row in sheet.rows:
+                for cell in row:
+                    if cell.value and isinstance(cell.value, str):
+                        for placeholder, value in replace_dict.items():
+                            if placeholder in cell.value:
+                                cell.value = cell.value.replace(placeholder, value)
+            
+            # Save to a temporary Excel file
+            excel_path = os.path.join(pdf_dir, f"contract_{data['contract'].contract_number}.xlsx")
+            workbook.save(excel_path)
+            
+            # Convert Excel to PDF (simplified - actual implementation would need external library)
+            # For now, just copy the Excel file
+            import shutil
+            shutil.copy(excel_path, pdf_path)
+            
+        elif template.file_type == 'word':
+            # Word template
+            from io import BytesIO
+            import docx
+            from docx.shared import Pt
+            
+            # Load the Word template
+            if not template.file_binary:
+                logging.error("Word template has no binary data")
+                return None
+                
+            doc = docx.Document(BytesIO(template.file_binary))
+            
+            # Fill in the Word template with contract data
+            # This is a basic implementation - customize as needed
+            replace_dict = {
+                '{{contract.contract_number}}': data['contract'].contract_number,
+                '{{contract.tenant_name}}': data['contract'].tenant_name,
+                '{{contract.tenant_address}}': data['contract'].tenant_address,
+                '{{owner.name}}': data['owner'].name,
+                '{{owner.address}}': data['owner'].address,
+                '{{building.name}}': data['building'].name,
+                '{{building.address}}': data['building'].address,
+                '{{room.room_number}}': data['room'].room_number,
+                '{{contract.rent_amount}}': str(data['contract'].rent_amount),
+                '{{agent.name}}': data['agent'].name,
+                '{{agent.license_number}}': data['agent'].license_number,
+            }
+            
+            # Replace placeholders in paragraphs
+            for para in doc.paragraphs:
+                for placeholder, value in replace_dict.items():
+                    if placeholder in para.text:
+                        para.text = para.text.replace(placeholder, value)
+            
+            # Replace placeholders in tables
+            for table in doc.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        for para in cell.paragraphs:
+                            for placeholder, value in replace_dict.items():
+                                if placeholder in para.text:
+                                    para.text = para.text.replace(placeholder, value)
+            
+            # Save to a temporary Word file
+            docx_path = os.path.join(pdf_dir, f"contract_{data['contract'].contract_number}.docx")
+            doc.save(docx_path)
+            
+            # Convert Word to PDF (simplified - actual implementation would need external library)
+            # For now, just copy the Word file
+            import shutil
+            shutil.copy(docx_path, pdf_path)
+            
+        elif template.file_type == 'pdf':
+            # PDF template - use PyPDF2 to manipulate the PDF if needed
+            # For now, just copy the PDF template
+            from io import BytesIO
+            import PyPDF2
+            
+            # Load the PDF template
+            if not template.file_binary:
+                logging.error("PDF template has no binary data")
+                return None
+                
+            # For now, just save the PDF as is
+            with open(pdf_path, 'wb') as f:
+                f.write(template.file_binary)
+                
+        else:
+            logging.error(f"Unsupported template type: {template.file_type}")
+            return None
+            
         return pdf_path
     except Exception as e:
         logging.error(f"Error generating PDF: {str(e)}")

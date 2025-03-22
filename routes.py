@@ -602,14 +602,36 @@ def template_list():
 def add_template():
     form = ContractTemplateForm()
     if form.validate_on_submit():
-        # If a template file is uploaded, read its contents
-        file_content = form.file_content.data
-        if form.template_file.data:
-            try:
-                file_content = form.template_file.data.read().decode('utf-8')
-            except UnicodeDecodeError:
-                flash('ファイルはUTF-8でエンコードされている必要があります。', 'danger')
-                return render_template('templates/add.html', form=form)
+        file_content = ''
+        file_binary = None
+        file_name = None
+        
+        # Handle different file types
+        if form.file_type.data == 'html':
+            # For HTML templates, use the text content provided
+            file_content = form.file_content.data
+            
+            # If a template file is uploaded, read its contents
+            if form.template_file.data:
+                try:
+                    file_content = form.template_file.data.read().decode('utf-8')
+                    file_name = secure_filename(form.template_file.data.filename)
+                except UnicodeDecodeError:
+                    flash('HTMLファイルはUTF-8でエンコードされている必要があります。', 'danger')
+                    return render_template('templates/add.html', form=form)
+        else:
+            # For non-HTML templates (Excel, Word, PDF), store the binary content
+            if form.template_file.data:
+                file_binary = form.template_file.data.read()
+                file_name = secure_filename(form.template_file.data.filename)
+                
+                # Set a placeholder for the file_content field
+                if form.file_type.data == 'excel':
+                    file_content = 'Excel Template'
+                elif form.file_type.data == 'word':
+                    file_content = 'Word Template'
+                elif form.file_type.data == 'pdf':
+                    file_content = 'PDF Template'
         
         # If this is set as default, unset other default templates
         if form.is_default.data:
@@ -621,6 +643,9 @@ def add_template():
             name=form.name.data,
             description=form.description.data,
             file_content=file_content,
+            file_type=form.file_type.data,
+            file_binary=file_binary,
+            file_name=file_name,
             is_default=form.is_default.data
         )
         db.session.add(template)
@@ -639,14 +664,34 @@ def edit_template(template_id):
     form.id.data = template.id
     
     if form.validate_on_submit():
-        # If a template file is uploaded, read its contents
         file_content = form.file_content.data
-        if form.template_file.data:
-            try:
-                file_content = form.template_file.data.read().decode('utf-8')
-            except UnicodeDecodeError:
-                flash('ファイルはUTF-8でエンコードされている必要があります。', 'danger')
-                return render_template('templates/edit.html', form=form, template=template)
+        file_binary = template.file_binary
+        file_name = template.file_name
+        
+        # Handle different file types
+        if form.file_type.data == 'html':
+            # For HTML templates, use the text content provided
+            if form.template_file.data:
+                try:
+                    file_content = form.template_file.data.read().decode('utf-8')
+                    file_name = secure_filename(form.template_file.data.filename)
+                    file_binary = None  # Clear binary data when switching to HTML
+                except UnicodeDecodeError:
+                    flash('HTMLファイルはUTF-8でエンコードされている必要があります。', 'danger')
+                    return render_template('templates/edit.html', form=form, template=template)
+        else:
+            # For non-HTML templates (Excel, Word, PDF), store the binary content
+            if form.template_file.data:
+                file_binary = form.template_file.data.read()
+                file_name = secure_filename(form.template_file.data.filename)
+                
+                # Set a placeholder for the file_content field
+                if form.file_type.data == 'excel':
+                    file_content = 'Excel Template'
+                elif form.file_type.data == 'word':
+                    file_content = 'Word Template'
+                elif form.file_type.data == 'pdf':
+                    file_content = 'PDF Template'
         
         # If this is set as default, unset other default templates
         if form.is_default.data and not template.is_default:
@@ -657,6 +702,9 @@ def edit_template(template_id):
         template.name = form.name.data
         template.description = form.description.data
         template.file_content = file_content
+        template.file_type = form.file_type.data
+        template.file_binary = file_binary
+        template.file_name = file_name
         template.is_default = form.is_default.data
         
         db.session.commit()
@@ -664,6 +712,46 @@ def edit_template(template_id):
         return redirect(url_for('template_list'))
     
     return render_template('templates/edit.html', form=form, template=template)
+
+@app.route('/templates/download/<int:template_id>')
+@login_required
+def download_template(template_id):
+    template = ContractTemplate.query.get_or_404(template_id)
+    
+    # Check if template is binary type
+    if template.file_type == 'html':
+        flash('HTMLテンプレートはダウンロードできません。', 'warning')
+        return redirect(url_for('template_list'))
+    
+    if not template.file_binary or not template.file_name:
+        flash('テンプレートファイルが見つかりませんでした。', 'danger')
+        return redirect(url_for('template_list'))
+    
+    # Create temporary file and save binary content
+    from io import BytesIO
+    file_data = BytesIO(template.file_binary)
+    
+    # Determine MIME type
+    mimetype = None
+    if template.file_type == 'excel':
+        if template.file_name.endswith('.xlsx'):
+            mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        else:
+            mimetype = 'application/vnd.ms-excel'
+    elif template.file_type == 'word':
+        if template.file_name.endswith('.docx'):
+            mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        else:
+            mimetype = 'application/msword'
+    elif template.file_type == 'pdf':
+        mimetype = 'application/pdf'
+    
+    return send_file(
+        file_data,
+        mimetype=mimetype,
+        as_attachment=True,
+        download_name=template.file_name
+    )
 
 @app.route('/templates/delete/<int:template_id>', methods=['POST'])
 @login_required

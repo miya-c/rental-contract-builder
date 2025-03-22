@@ -25,6 +25,7 @@
                                 <th>ID</th>
                                 <th>テンプレート名</th>
                                 <th>説明</th>
+                                <th>ファイル形式</th>
                                 <th>デフォルト</th>
                                 <th>作成日</th>
                                 <th>操作</th>
@@ -37,6 +38,19 @@
                                 <td>{{ template.name }}</td>
                                 <td>{{ template.description|truncate(100) if template.description else '-' }}</td>
                                 <td>
+                                    {% if template.file_type == 'html' %}
+                                    <span class="badge bg-primary">HTML</span>
+                                    {% elif template.file_type == 'excel' %}
+                                    <span class="badge bg-success">Excel</span>
+                                    {% elif template.file_type == 'word' %}
+                                    <span class="badge bg-info">Word</span>
+                                    {% elif template.file_type == 'pdf' %}
+                                    <span class="badge bg-danger">PDF</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ template.file_type }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
                                     {% if template.is_default %}
                                     <span class="badge bg-success">はい</span>
                                     {% else %}
@@ -48,6 +62,11 @@
                                     <a href="{{ url_for('edit_template', template_id=template.id) }}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-edit"></i> 編集
                                     </a>
+                                    {% if template.file_type != 'html' and template.file_binary %}
+                                    <a href="{{ url_for('download_template', template_id=template.id) }}" class="btn btn-success btn-sm">
+                                        <i class="fas fa-download"></i> ダウンロード
+                                    </a>
+                                    {% endif %}
                                     <form method="POST" action="{{ url_for('delete_template', template_id=template.id) }}" 
                                           class="d-inline delete-confirm">
                                         <button type="submit" class="btn btn-danger btn-sm">
