@@ -189,6 +189,48 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Template file type handling
+    const fileTypeField = document.getElementById('file_type');
+    const htmlContentContainer = document.getElementById('html-content-container');
+    const nonHtmlInfo = document.getElementById('non-html-info');
+    const templateFileInput = document.getElementById('template_file');
+    const fileFormatHelp = document.getElementById('file-format-help');
+    
+    if (fileTypeField && htmlContentContainer && nonHtmlInfo && templateFileInput && fileFormatHelp) {
+        // Set appropriate file accept attribute based on selected file type
+        function updateAcceptAttribute() {
+            const fileType = fileTypeField.value;
+            
+            if (fileType === 'html') {
+                templateFileInput.setAttribute('accept', '.html,.htm,.txt');
+                fileFormatHelp.textContent = 'HTMLファイルまたはテキストファイルをアップロードしてください。';
+                htmlContentContainer.style.display = 'block';
+                nonHtmlInfo.style.display = 'none';
+            } else if (fileType === 'excel') {
+                templateFileInput.setAttribute('accept', '.xlsx,.xls');
+                fileFormatHelp.textContent = 'Excelファイル(.xlsx, .xls)をアップロードしてください。';
+                htmlContentContainer.style.display = 'none';
+                nonHtmlInfo.style.display = 'block';
+            } else if (fileType === 'word') {
+                templateFileInput.setAttribute('accept', '.docx,.doc');
+                fileFormatHelp.textContent = 'Wordファイル(.docx, .doc)をアップロードしてください。';
+                htmlContentContainer.style.display = 'none';
+                nonHtmlInfo.style.display = 'block';
+            } else if (fileType === 'pdf') {
+                templateFileInput.setAttribute('accept', '.pdf');
+                fileFormatHelp.textContent = 'PDFファイル(.pdf)をアップロードしてください。';
+                htmlContentContainer.style.display = 'none';
+                nonHtmlInfo.style.display = 'block';
+            }
+        }
+        
+        // Update on change
+        fileTypeField.addEventListener('change', updateAcceptAttribute);
+        
+        // Initial update
+        updateAcceptAttribute();
+    }
+    
     // Contract template preview functionality
     const previewTemplateButton = document.getElementById('preview-template');
     if (previewTemplateButton) {

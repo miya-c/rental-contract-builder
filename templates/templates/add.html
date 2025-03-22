@@ -34,16 +34,24 @@
                         <label class="form-check-label" for="is_default">{{ form.is_default.label }}</label>
                     </div>
                     
+                    <div class="mb-3 required">
+                        <label for="file_type" class="form-label">{{ form.file_type.label }}</label>
+                        {{ form.file_type(class="form-control", id="file_type") }}
+                        {% for error in form.file_type.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="template_file" class="form-label">{{ form.template_file.label }}</label>
-                        {{ form.template_file(class="form-control", id="template_file", accept=".html,.txt") }}
-                        <small class="text-muted">HTMLファイルまたはテキストファイルをアップロードしてください。アップロードする場合、下のテンプレート内容は上書きされます。</small>
+                        {{ form.template_file(class="form-control", id="template_file") }}
+                        <small class="text-muted" id="file-format-help">ファイル形式に応じたテンプレートをアップロードしてください。</small>
                         {% for error in form.template_file.errors %}
                         <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     
-                    <div class="mb-3 required">
+                    <div class="mb-3" id="html-content-container">
                         <label for="file_content" class="form-label">{{ form.file_content.label }}</label>
                         <div class="d-flex justify-content-end mb-2">
                             <button id="preview-template" class="btn btn-info btn-sm">
@@ -71,6 +79,25 @@
                         {% for error in form.file_content.errors %}
                         <div class="text-danger">{{ error }}</div>
                         {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3" id="non-html-info" style="display: none;">
+                        <div class="alert alert-info">
+                            <p><strong>注意:</strong> 非HTMLテンプレートでは、以下のプレースホルダを使用して変数を挿入できます。</p>
+                            <ul class="mt-2">
+                                <li><code>{{contract.contract_number}}</code> - 契約番号</li>
+                                <li><code>{{contract.tenant_name}}</code> - 借主名</li>
+                                <li><code>{{contract.tenant_address}}</code> - 借主住所</li>
+                                <li><code>{{owner.name}}</code> - オーナー名</li>
+                                <li><code>{{owner.address}}</code> - オーナー住所</li>
+                                <li><code>{{building.name}}</code> - 建物名</li>
+                                <li><code>{{building.address}}</code> - 建物住所</li>
+                                <li><code>{{room.room_number}}</code> - 部屋番号</li>
+                                <li><code>{{contract.rent_amount}}</code> - 月額賃料</li>
+                                <li><code>{{agent.name}}</code> - 宅建士名</li>
+                                <li><code>{{agent.license_number}}</code> - 宅建士免許番号</li>
+                            </ul>
+                        </div>
                     </div>
                     
                     <div class="d-flex justify-content-between">
