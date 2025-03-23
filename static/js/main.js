@@ -257,4 +257,35 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    
+    // 契約書フォーム送信のデバッグ
+    const contractForm = document.querySelector('form[action*="create_contract"]');
+    if (contractForm) {
+        console.log('契約書フォームを検出しました');
+        contractForm.addEventListener('submit', function(e) {
+            console.log('フォーム送信イベントがトリガーされました');
+            
+            // フォームデータの確認
+            const formData = new FormData(this);
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
+            
+            // 必須フィールドの検証
+            const requiredFields = ['tenant_name', 'tenant_address', 'start_date', 'rent_amount', 'room_id', 'agent_id', 'template_id'];
+            let missingFields = [];
+            
+            requiredFields.forEach(fieldName => {
+                const field = document.querySelector(`[name="${fieldName}"]`);
+                if (field && !field.value) {
+                    console.error(`必須フィールドが入力されていません: ${fieldName}`);
+                    missingFields.push(fieldName);
+                }
+            });
+            
+            if (missingFields.length > 0) {
+                console.error('以下の必須フィールドが入力されていません: ' + missingFields.join(', '));
+            }
+        });
+    }
 });

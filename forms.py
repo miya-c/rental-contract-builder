@@ -168,7 +168,7 @@ class MultiCheckboxField(SelectMultipleField):
 
 class ContractForm(FlaskForm):
     """Lease contract form"""
-    contract_number = StringField('契約番号', validators=[DataRequired(), Length(max=50)])
+    # 契約番号は自動生成されるので、フォームからは除外します
     tenant_name = StringField('借主名', validators=[DataRequired(), Length(max=100)])
     tenant_address = StringField('借主住所', validators=[DataRequired(), Length(max=255)])
     tenant_phone = StringField('借主電話番号', validators=[Optional(), Length(max=20)])

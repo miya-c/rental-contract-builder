@@ -887,6 +887,14 @@ def contract_list():
 @login_required
 def create_contract():
     form = ContractForm()
+    
+    # デバッグログ
+    logging.info(f"Method: {request.method}")
+    if request.method == 'POST':
+        logging.info(f"Form data: {request.form}")
+        logging.info(f"Form validation: {form.validate()}")
+        if not form.validate():
+            logging.error(f"Form errors: {form.errors}")
 
     # If no templates exist, redirect to create one
     if not form.template_id.choices:
@@ -894,51 +902,69 @@ def create_contract():
         return redirect(url_for('add_template'))
 
     if form.validate_on_submit():
+        logging.info("フォーム検証に成功しました。契約書を作成します。")
         # Generate a unique contract number
         current_date = datetime.now().strftime('%Y%m%d')
         count = Contract.query.filter(
             Contract.contract_number.like(f"{current_date}%")).count() + 1
         contract_number = f"{current_date}-{count:04d}"
+        
+        logging.info(f"生成された契約番号: {contract_number}")
 
-        # Create the contract
-        contract = Contract(
-            contract_number=contract_number,
-            tenant_name=form.tenant_name.data,
-            tenant_address=form.tenant_address.data,
-            tenant_phone=form.tenant_phone.data,
-            tenant_email=form.tenant_email.data,
-            start_date=form.start_date.data,
-            end_date=form.end_date.data,
-            rent_amount=form.rent_amount.data,
-            security_deposit=form.security_deposit.data,
-            key_money=form.key_money.data,
-            management_fee=form.management_fee.data,
-            custom_special_terms=form.custom_special_terms.data,
-            room_id=form.room_id.data,
-            agent_id=form.agent_id.data,
-            created_by_id=current_user.id,
-            template_id=form.template_id.data)
-        db.session.add(contract)
-
-        # Add selected special terms
-        if form.special_terms.data:
-            for term_id in form.special_terms.data:
-                term = SpecialTerm.query.get(term_id)
-                if term:
-                    contract.special_terms.append(term)
-
-        db.session.commit()
-
-        # Generate PDF and store its path
-        pdf_path = generate_pdf(contract.id)
-        if pdf_path:
-            contract.pdf_path = pdf_path
+        try:
+            # Create the contract
+            contract = Contract(
+                contract_number=contract_number,
+                tenant_name=form.tenant_name.data,
+                tenant_address=form.tenant_address.data,
+                tenant_phone=form.tenant_phone.data,
+                tenant_email=form.tenant_email.data,
+                start_date=form.start_date.data,
+                end_date=form.end_date.data,
+                rent_amount=form.rent_amount.data,
+                security_deposit=form.security_deposit.data,
+                key_money=form.key_money.data,
+                management_fee=form.management_fee.data,
+                custom_special_terms=form.custom_special_terms.data,
+                room_id=form.room_id.data,
+                agent_id=form.agent_id.data,
+                created_by_id=current_user.id,
+                template_id=form.template_id.data)
+            db.session.add(contract)
+            
+            # Add selected special terms
+            if form.special_terms.data:
+                logging.info(f"選択された特約条項: {form.special_terms.data}")
+                for term_id in form.special_terms.data:
+                    term = SpecialTerm.query.get(term_id)
+                    if term:
+                        contract.special_terms.append(term)
+            
             db.session.commit()
-            flash('契約書が作成されました。', 'success')
-            return redirect(url_for('view_contract', contract_id=contract.id))
-        else:
-            flash('PDFの生成中にエラーが発生しました。契約は保存されましたが、PDFを再生成してください。', 'warning')
-            return redirect(url_for('view_contract', contract_id=contract.id))
+            logging.info(f"契約書データをDBに保存しました。契約ID: {contract.id}")
+
+            # Generate PDF and store its path
+            pdf_path = generate_pdf(contract.id)
+            if pdf_path:
+                contract.pdf_path = pdf_path
+                db.session.commit()
+                logging.info(f"PDFが生成されました: {pdf_path}")
+                flash('契約書が作成されました。', 'success')
+                return redirect(url_for('view_contract', contract_id=contract.id))
+            else:
+                logging.error("PDFの生成に失敗しました")
+                flash('PDFの生成中にエラーが発生しました。契約は保存されましたが、PDFを再生成してください。', 'warning')
+                return redirect(url_for('view_contract', contract_id=contract.id))
+                
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f"契約書作成中にエラーが発生しました: {e}")
+            flash(f'契約書の作成中にエラーが発生しました: {e}', 'danger')
+    
+    # デバッグログ 
+    else:
+        if request.method == 'POST':
+            logging.warning("フォームの検証に失敗しました")
 
     return render_template('contracts/create.html', form=form)
 
