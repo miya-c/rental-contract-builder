@@ -972,6 +972,45 @@ def download_contract_pdf(contract_id):
                      download_name=filename)
 
 
+@app.route('/contracts/original/<int:contract_id>')
+@login_required
+def download_contract_original(contract_id):
+    contract = Contract.query.get_or_404(contract_id)
+
+    if not contract.original_file_path or not os.path.exists(contract.original_file_path):
+        flash('元のファイルが見つかりませんでした。', 'danger')
+        return redirect(url_for('view_contract', contract_id=contract_id))
+
+    # Get the file extension and determine the correct MIME type
+    file_ext = os.path.splitext(contract.original_file_path)[1].lower()
+    
+    # Set mime type based on file extension
+    mimetype = None
+    if file_ext in ['.xlsx', '.xls']:
+        if file_ext == '.xlsx':
+            mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        else:
+            mimetype = 'application/vnd.ms-excel'
+        filename = f"lease_contract_{contract.contract_number}{file_ext}"
+    elif file_ext in ['.docx', '.doc']:
+        if file_ext == '.docx':
+            mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        else:
+            mimetype = 'application/msword'
+        filename = f"lease_contract_{contract.contract_number}{file_ext}"
+    elif file_ext == '.pdf':
+        mimetype = 'application/pdf'
+        filename = f"lease_contract_{contract.contract_number}.pdf"
+    else:
+        mimetype = 'application/octet-stream'
+        filename = f"lease_contract_{contract.contract_number}{file_ext}"
+
+    return send_file(contract.original_file_path,
+                     mimetype=mimetype,
+                     as_attachment=True,
+                     download_name=filename)
+
+
 @app.route('/contracts/regenerate-pdf/<int:contract_id>', methods=['POST'])
 @login_required
 def regenerate_contract_pdf(contract_id):
@@ -1007,6 +1046,13 @@ def delete_contract(contract_id):
             os.remove(contract.pdf_path)
         except OSError as e:
             logging.error(f"Error deleting PDF file: {e}")
+    
+    # Delete original file if it exists
+    if contract.original_file_path and os.path.exists(contract.original_file_path):
+        try:
+            os.remove(contract.original_file_path)
+        except OSError as e:
+            logging.error(f"Error deleting original file: {e}")
 
     # Delete the contract
     db.session.delete(contract)

@@ -200,6 +200,9 @@ class Contract(db.Model):
     # PDF file storage path (or content for PDFs generated on-the-fly)
     pdf_path = db.Column(db.String(255), nullable=True)
     
+    # Original file path (for Excel, Word, etc.)
+    original_file_path = db.Column(db.String(255), nullable=True)
+    
     # Foreign keys
     room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'), nullable=False)

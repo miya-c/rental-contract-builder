@@ -11,6 +11,17 @@
                 <a href="{{ url_for('download_contract_pdf', contract_id=contract.id) }}" class="btn btn-primary">
                     <i class="fas fa-file-pdf"></i> PDFダウンロード
                 </a>
+                {% if contract.original_file_path %}
+                <a href="{{ url_for('download_contract_original', contract_id=contract.id) }}" class="btn btn-success">
+                    {% if '.xlsx' in contract.original_file_path or '.xls' in contract.original_file_path %}
+                    <i class="fas fa-file-excel"></i> Excelダウンロード
+                    {% elif '.docx' in contract.original_file_path or '.doc' in contract.original_file_path %}
+                    <i class="fas fa-file-word"></i> Wordダウンロード
+                    {% else %}
+                    <i class="fas fa-file"></i> 元のファイルをダウンロード
+                    {% endif %}
+                </a>
+                {% endif %}
                 <form method="POST" action="{{ url_for('regenerate_contract_pdf', contract_id=contract.id) }}" class="d-inline">
                     <button type="submit" class="btn btn-info">
                         <i class="fas fa-sync-alt"></i> PDF再生成
@@ -62,15 +73,15 @@
                             </tr>
                             <tr>
                                 <th>敷金:</th>
-                                <td>{{ '{:,}'.format(contract.security_deposit) }}円 if contract.security_deposit else '-' }}</td>
+                                <td>{% if contract.security_deposit %}{{ '{:,}'.format(contract.security_deposit) }}円{% else %}-{% endif %}</td>
                             </tr>
                             <tr>
                                 <th>礼金:</th>
-                                <td>{{ '{:,}'.format(contract.key_money) }}円 if contract.key_money else '-' }}</td>
+                                <td>{% if contract.key_money %}{{ '{:,}'.format(contract.key_money) }}円{% else %}-{% endif %}</td>
                             </tr>
                             <tr>
                                 <th>管理費:</th>
-                                <td>{{ '{:,}'.format(contract.management_fee) }}円 if contract.management_fee else '-' }}</td>
+                                <td>{% if contract.management_fee %}{{ '{:,}'.format(contract.management_fee) }}円{% else %}-{% endif %}</td>
                             </tr>
                         </table>
                     </div>
