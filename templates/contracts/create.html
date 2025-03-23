@@ -79,7 +79,7 @@
                             </div>
                             
                             <div class="row">
-                                <div class="col-md-4 mb-3">
+                                <div class="mb-3 required">
                                     <label for="security_deposit" class="form-label">{{ form.security_deposit.label }}</label>
                                     {{ form.security_deposit(class="form-control", id="security_deposit", type="number") }}
                                     {% for error in form.security_deposit.errors %}
@@ -87,7 +87,7 @@
                                     {% endfor %}
                                 </div>
                                 
-                                <div class="col-md-4 mb-3">
+                                <div class="mb-3 required">
                                     <label for="key_money" class="form-label">{{ form.key_money.label }}</label>
                                     {{ form.key_money(class="form-control", id="key_money", type="number") }}
                                     {% for error in form.key_money.errors %}
@@ -95,10 +95,25 @@
                                     {% endfor %}
                                 </div>
                                 
-                                <div class="col-md-4 mb-3">
+                                <!-- <div class="col-md-4 mb-3">
                                     <label for="management_fee" class="form-label">{{ form.management_fee.label }}</label>
                                     {{ form.management_fee(class="form-control", id="management_fee", type="number") }}
                                     {% for error in form.management_fee.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div> -->
+                                <div class="mb-3 required">
+                                    <label for="management_fee" class="form-label">{{ form.management_fee.label }}</label>
+                                    {{ form.management_fee(class="form-control", id="management_fee") }}
+                                    {% for error in form.management_fee.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="mb-3 required">
+                                    <label for="parking_fee" class="form-label">駐車料</label>
+                                    {{ form.parking_fee(class="form-control", id="parking_fee") }}
+                                    {% for error in form.parking_fee.errors %}
                                     <div class="text-danger">{{ error }}</div>
                                     {% endfor %}
                                 </div>
